@@ -1,0 +1,12 @@
+After installing node.js...
+Run in console:
+   npm install -g express-generator
+
+In ExpressNodeJS folder, run in console:
+    express testExpress
+
+Then to install dependencies, run in console in testExpress folder:
+    npm install
+
+Then run the express application in console:
+    npm start

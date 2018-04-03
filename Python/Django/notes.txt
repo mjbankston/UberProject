@@ -1,0 +1,8 @@
+Installed latest Django with:
+    pip install Django
+
+Started a Django project with:
+    django-admin startproject testSite
+
+To run the project, run in command line:
+    python manage.py runserver
