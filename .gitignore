@@ -1,1 +1,2 @@
 *.pyc
+Python/Django/testSite/db.sqlite3

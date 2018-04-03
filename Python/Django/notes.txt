@@ -6,3 +6,19 @@ Started a Django project with:
 
 To run the project, run in command line:
     python manage.py runserver
+
+Created a new app inside testSite project named testApp:
+    python manage.py startapp testApp
+
+Made the testApp urls.py file
+Modified the testSite urls.py file
+
+Ran the server, then went to http://127.0.0.1:8000/testApp/
+
+Ran:
+    python manage.py migrate
+    python manage.py createsuperuser
+        username: admin
+        email: admin@example.com
+        password: arstneio
+
