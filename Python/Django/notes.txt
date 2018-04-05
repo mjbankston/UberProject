@@ -22,3 +22,16 @@ Ran:
         email: admin@example.com
         password: arstneio
 
+Renamed main folder to learning_site because it does not matter what the enclosing directory name is.
+    Right now, there is testSite folder, which is where all the global settings/parameters for this site exist.
+    The testSite/urls.py file points to one application in the testApp folder and its urls.py file.
+    The testApp/urls.py configures a blank url to point to 'index'.
+    'index' refers to a function defined in testApp/views.py
+
+Had a problem getting templates to work in my testApp.
+    Found out I needed to add the app settings class 'testApp.apps.TestappConfig' to the INSTALLED_APPS list in testSite/settings.py.
+
+Added a templates folder under testApp with a new folder 'testApp' and an index.html file inside. 
+    The inner 'testApp' folder is to ensure it's in a unique namespace, so it must be referred to as 'testApp/index.html'.
+
+
