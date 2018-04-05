@@ -14,3 +14,8 @@ def index(request):
 
     return render(request, 'testApp/index.html', context)
     # return HttpResponse('This is an HttpResponse.')
+
+
+def status(request):
+    context = {}
+    return render(request, 'testApp/status.html', context)

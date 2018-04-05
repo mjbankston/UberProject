@@ -30,8 +30,13 @@ Renamed main folder to learning_site because it does not matter what the enclosi
 
 Had a problem getting templates to work in my testApp.
     Found out I needed to add the app settings class 'testApp.apps.TestappConfig' to the INSTALLED_APPS list in testSite/settings.py.
+    I learned this could be shortened to just 'testApp' inside INSTALLED_APPS.
 
 Added a templates folder under testApp with a new folder 'testApp' and an index.html file inside. 
     The inner 'testApp' folder is to ensure it's in a unique namespace, so it must be referred to as 'testApp/index.html'.
 
+Added a static folder under testApp with jquery javascript under a js folder.
+    Nothing in the global settings file needed to be changed.
+    status.html shows how to load the static jquery javascript
+    Django MUST be restarted with runserver command to see changes to static files!
 
