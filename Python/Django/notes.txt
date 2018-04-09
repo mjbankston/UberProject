@@ -41,3 +41,13 @@ Added a static folder under testApp with jquery javascript under a js folder.
     Django MUST be restarted with runserver command to see changes to static files!
 
 Downloaded the Python 'channels' package through pip
+    Needed to restart Django server, otherwise it doesn't see the new package
+    Got a 'ModuleNotFoundError: No module named 'win32api' error. A package called 'win32api' doesn't exist through pip.
+    Found out 'win32api' package can be downloaded by using 'pywin32' as the name using pip.
+    Got the error 'CommandError: You have not set ASGI_APPLICATION, which is needed to run the server.' after installing pywin32 and restarting the server.
+    Needed to add 'routing.py' to testApp with the application assignment.
+    Also needed to add ASGI_APPLICATION definition to the bottom of settings.py to point to the application assignment above.
+    After running the server (the same as before), it now worked with HTTP/2 support not enabled.
+    I fixed HTTP/2 support by installing http2 and tls extras for the Twisted library using the command: 
+        pip install -U Twisted[tls,http2]
+
