@@ -40,3 +40,4 @@ Added a static folder under testApp with jquery javascript under a js folder.
     status.html shows how to load the static jquery javascript
     Django MUST be restarted with runserver command to see changes to static files!
 
+Downloaded the Python 'channels' package through pip
