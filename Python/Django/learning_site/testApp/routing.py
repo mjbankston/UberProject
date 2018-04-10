@@ -1,5 +1,6 @@
-from channels.routing import ProtocolTypeRouter
+from django.conf.urls import url
+from . import consumers
 
-application = ProtocolTypeRouter({
-    # (http->django views is added by default)
-})
+websocket_urlpatterns = [
+    url(r'^ws/', consumers.StatusConsumer)
+]

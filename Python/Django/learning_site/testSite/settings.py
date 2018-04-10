@@ -122,4 +122,4 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 # Needed for channels
-ASGI_APPLICATION = 'testApp.routing.application'
+ASGI_APPLICATION = 'testSite.routing.application'

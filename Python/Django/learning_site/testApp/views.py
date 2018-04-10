@@ -2,6 +2,10 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
 
+import logging
+
+logger = logging.getLogger('django.server')
+
 # These methods get a HttpRequest object and return an HttpResponse object
 
 

@@ -51,3 +51,10 @@ Downloaded the Python 'channels' package through pip
     I fixed HTTP/2 support by installing http2 and tls extras for the Twisted library using the command: 
         pip install -U Twisted[tls,http2]
 
+Working on Websockets + RabbitMQ
+    Needed channels websocket js in status.html, so I added a source import for channels/js/websocketbridge.js.
+    Added a bunch of statements to send and receive messages in the status.coffee file by using channels.WebSocketBridge from websocketbridge.js.
+    Added consumers.py to the testApp folder.
+    Had a problem with WebSocketBridge object throwing an error in the browser developer tools during send because I was sending a message too quickly after setting up the object since it had not connected yet.
+
+Setup using built-in Django server logging in consumers.py

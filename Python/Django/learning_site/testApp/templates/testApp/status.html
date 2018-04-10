@@ -1,7 +1,12 @@
 {% load static %}
+<script src="{% static 'channels/js/websocketbridge.js' %}"></script>
 <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
 <script src="{% static 'js/status.js' %}"></script>
 <link rel="stylesheet" href="{% static 'css/status.css' %}" type="text/css" media="screen" />
 
 <p id="status_title">Status Page</p>
-<div id="status_div"></div>
+<div id="status_div">
+    <button id="send_message_button">
+        Send Message
+    </button>
+</div>
