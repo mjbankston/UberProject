@@ -16,10 +16,10 @@ try:
     while True:
         t = random.randint(1, 1000)
         # This is to publish an object on a queue designated by routing_key.
-        channel.basic_publish(exchange='status',
-                              routing_key='',
-                              body=str(t))
-        time.sleep(.001)
+        channel.publish(exchange='status',
+                        routing_key='',
+                        body=str(t))
+        time.sleep(.05)
 
 finally:
     # Ensure the connection is closed, even in case of an error

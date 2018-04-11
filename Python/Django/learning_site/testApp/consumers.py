@@ -23,6 +23,7 @@ class StatusConsumer(WebsocketConsumer):
         messaging_utils.start_streaming(self.status_callback)
 
     def disconnect(self, close_code):
+        messaging_utils.stop_streaming(self.status_callback)
         pass
 
     def receive(self, text_data=None, bytes_data=None):
