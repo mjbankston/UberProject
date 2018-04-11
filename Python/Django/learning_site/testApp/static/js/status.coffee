@@ -6,7 +6,7 @@ console.log('Starting status page.')
 # Use $ -> to ensure document is ready.
 $ ->
     $('#status_div').append(
-        $('<p>').append('Test message.')
+        $('<p>').attr('id', 'message_display').append('No message.')
     )
 
     webSocketBridge = new channels.WebSocketBridge()
@@ -14,14 +14,14 @@ $ ->
     webSocketBridge.connect '/ws/'
 
     # Setup a listener callback function for anything that gets sent on this web socket
-    webSocketBridge.listen (action, stream) ->
-        console.log 'Received message...', action, stream
+    webSocketBridge.listen (msg_ob, stream) ->
+        $('#message_display').html('<b>' + msg_ob.value + '</b>')
         return
 
     # Setup a listener callback function for a specific stream channel (called message_stream) 
     # on this web socket
-    webSocketBridge.demultiplex 'message_stream', (action, stream) ->
-        console.info 'Received message from message_stream...', action, stream
+    webSocketBridge.demultiplex 'message_stream', (msg_ob, stream) ->
+        console.info 'Received message from message_stream...', msg_ob, stream
         return
 
     $('#send_message_button').click (e) ->
