@@ -1,5 +1,6 @@
 from channels.generic.websocket import WebsocketConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
+from . import messaging_utils
 import json
 import logging
 import time
@@ -11,37 +12,15 @@ logger = logging.getLogger('django.server')
 
 class StatusConsumer(WebsocketConsumer):
 
-    def callback(self, ch, method, properties, body):
+    def status_callback(self, body):
         self.send(text_data=json.dumps({
             'value': str(int(body))
         }))
 
-    def start_streaming(self):
-        logger.info('Starting status streaming...')
-        self.connection = pika.BlockingConnection(
-            pika.ConnectionParameters(host='localhost'))
-        self.channel = self.connection.channel()
-        self.channel.exchange_declare(exchange='status',
-                                      exchange_type='fanout')
-
-        self.result = self.channel.queue_declare(exclusive=True)
-        self.queue_name = self.result.method.queue
-
-        self.channel.queue_bind(exchange='status',
-                                queue=self.queue_name)
-
-        self.channel.basic_consume(self.callback,
-                                   queue=self.queue_name,
-                                   no_ack=True)
-
-        self.channel.start_consuming()
-
     def connect(self):
         logger.info('Accepting a new connection...')
         self.accept()
-        self.consuming_thread = threading.Thread(
-            target=self.start_streaming, daemon=True)
-        self.consuming_thread.start()
+        messaging_utils.start_streaming(self.status_callback)
 
     def disconnect(self, close_code):
         pass
