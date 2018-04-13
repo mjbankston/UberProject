@@ -1,4 +1,27 @@
+body {
+  background-color: whitesmoke;
+}
+
 #status_title {
-  color: black;
+  color: white;
   font-size: 2em;
+}
+
+#chart_container {
+  position: relative;
+  height: 400;
+  width: 600;
+}
+
+.tabcontent {
+  margin-left: 10%;
+  display: none;
+}
+
+#sidebar {
+  width: 10%;
+}
+
+#chart_tab {
+  display: block;
 }

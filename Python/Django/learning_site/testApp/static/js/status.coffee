@@ -16,13 +16,11 @@ $ ->
     # Setup a listener callback function for anything that gets sent on this web socket
     webSocketBridge.listen (msg_ob, stream) ->
         $('#message_display').text(msg_ob.value)
-        return
 
     # Setup a listener callback function for a specific stream channel (called message_stream) 
     # on this web socket
     webSocketBridge.demultiplex 'message_stream', (msg_ob, stream) ->
         console.info 'Received message from message_stream...', msg_ob, stream
-        return
 
     $('#send_message_button').click (e) ->
         webSocketBridge.send(
@@ -32,20 +30,11 @@ $ ->
             .send(
                 message: "Example streaming text."
             )
-        return
 
     ctx = $('#chartjs_canvas')[0].getContext('2d')
     myChart = new Chart(ctx,
-        type: 'bar'
+        type: 'line'
         data:
-            labels: [
-                'Red'
-                'Blue'
-                'Yellow'
-                'Green'
-                'Purple'
-                'Orange'
-            ]
             datasets: [
                 label: '# of Votes'
                 data: [
@@ -57,12 +46,12 @@ $ ->
                     3
                 ]
                 backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)'
-                    'rgba(54, 162, 235, 0.2)'
-                    'rgba(255, 206, 86, 0.2)'
-                    'rgba(75, 192, 192, 0.2)'
-                    'rgba(153, 102, 255, 0.2)'
-                    'rgba(255, 159, 64, 0.2)'
+                    'rgba(255, 99, 132, 0.8)'
+                    'rgba(54, 162, 235, 0.8)'
+                    'rgba(255, 206, 86, 0.8)'
+                    'rgba(75, 192, 192, 0.8)'
+                    'rgba(153, 102, 255, 0.8)'
+                    'rgba(255, 159, 64, 0.8)'
                 ]
                 borderColor: [
                     'rgba(255,99,132,1)'
@@ -79,5 +68,21 @@ $ ->
                 yAxes:
                     ticks: 
                         beginAtZero: true
+                xAxes:
+                    ticks: 
+                        beginAtZero: true
     )
-    return
+    
+    $('#chart_tab_button').click ->
+        openTab($('#chart_tab'))
+
+    $('#send_message_tab_button').click ->
+        openTab($('#send_message_tab'))
+
+    $('#help_tab_button').click ->
+        openTab($('#help_tab'))
+
+openTab = (tab) ->
+    $('.tabcontent').each ->
+        $(this).hide()
+    tab.show()

@@ -1,4 +1,6 @@
 (function() {
+  var openTab;
+
   console.log('Starting status page.');
 
   // Create a master web socket object from the websocketbridge.js channels library javascript file
@@ -11,26 +13,25 @@
     webSocketBridge.connect('/ws/');
     // Setup a listener callback function for anything that gets sent on this web socket
     webSocketBridge.listen(function(msg_ob, stream) {
-      $('#message_display').text(msg_ob.value);
+      return $('#message_display').text(msg_ob.value);
     });
     // Setup a listener callback function for a specific stream channel (called message_stream) 
     // on this web socket
     webSocketBridge.demultiplex('message_stream', function(msg_ob, stream) {
-      console.info('Received message from message_stream...', msg_ob, stream);
+      return console.info('Received message from message_stream...', msg_ob, stream);
     });
     $('#send_message_button').click(function(e) {
       webSocketBridge.send({
         message: "Example message text."
       });
-      webSocketBridge.stream('message_stream').send({
+      return webSocketBridge.stream('message_stream').send({
         message: "Example streaming text."
       });
     });
     ctx = $('#chartjs_canvas')[0].getContext('2d');
     myChart = new Chart(ctx, {
-      type: 'bar',
+      type: 'line',
       data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
         datasets: [
           {
             label: '# of Votes',
@@ -40,12 +41,12 @@
           5,
           2,
           3],
-            backgroundColor: ['rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-          'rgba(75, 192, 192, 0.2)',
-          'rgba(153, 102, 255, 0.2)',
-          'rgba(255, 159, 64, 0.2)'],
+            backgroundColor: ['rgba(255, 99, 132, 0.8)',
+          'rgba(54, 162, 235, 0.8)',
+          'rgba(255, 206, 86, 0.8)',
+          'rgba(75, 192, 192, 0.8)',
+          'rgba(153, 102, 255, 0.8)',
+          'rgba(255, 159, 64, 0.8)'],
             borderColor: ['rgba(255,99,132,1)',
           'rgba(54, 162, 235, 1)',
           'rgba(255, 206, 86, 1)',
@@ -62,11 +63,32 @@
             ticks: {
               beginAtZero: true
             }
+          },
+          xAxes: {
+            ticks: {
+              beginAtZero: true
+            }
           }
         }
       }
     });
+    $('#chart_tab_button').click(function() {
+      return openTab($('#chart_tab'));
+    });
+    $('#send_message_tab_button').click(function() {
+      return openTab($('#send_message_tab'));
+    });
+    return $('#help_tab_button').click(function() {
+      return openTab($('#help_tab'));
+    });
   });
+
+  openTab = function(tab) {
+    $('.tabcontent').each(function() {
+      return $(this).hide();
+    });
+    return tab.show();
+  };
 
 }).call(this);
 

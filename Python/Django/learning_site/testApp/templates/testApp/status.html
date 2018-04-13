@@ -4,18 +4,36 @@
 <script src="{% static 'js/moment.min.js' %}"></script>
 <script src="{% static 'js/Chart.min.js' %}"></script>
 <script src="{% static 'js/status.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/w3.css' %}" type="text/css" media="screen" />
 <link rel="stylesheet" href="{% static 'css/status.css' %}" type="text/css" media="screen" />
 
 <title>Status</title>
 
-<p id="status_title">Status Page</p>
-
-<div class="chart-container" style="position: relative; height:40vh; width:40vw">
-    <canvas id="chartjs_canvas"></canvas>
+<div id="sidebar" class="w3-sidebar w3-bar-block w3-blue-gray">
+    <h3 class="w3-bar-item w3-border-bottom">
+        <b>BH Admin</b>
+    </h3>
+    <button class="w3-bar-item w3-button w3-border-bottom w3-hover-red" id="chart_tab_button">Chart</button>
+    <button class="w3-bar-item w3-button w3-border-bottom w3-hover-red" id="send_message_tab_button">Send Message</button>
+    <button class="w3-bar-item w3-button w3-border-bottom w3-hover-red" id="help_tab_button">Help</button>
 </div>
 
-<div id="status_div" style="position: relative">
-    <button id="send_message_button">
-        Send Message
-    </button>
+<div id="chart_tab" class="tabcontent">
+    <div class="w3-container" id="chart_container">
+        <canvas id="chartjs_canvas"></canvas>
+    </div>
+</div>
+
+<div id="send_message_tab" class="tabcontent">
+    <div class="w3-container" id="status_div">
+        <button class="w3-button w3-indigo" id="send_message_button">
+            Send Message
+        </button>
+    </div>
+</div>
+
+<div id="help_tab" class="tabcontent">
+    <div class="w3-container">
+        <h2>Help</h2>
+    </div>
 </div>
