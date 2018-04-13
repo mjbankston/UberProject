@@ -1,13 +1,20 @@
 {% load static %}
 <script src="{% static 'channels/js/websocketbridge.js' %}"></script>
 <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+<script src="{% static 'js/moment.min.js' %}"></script>
+<script src="{% static 'js/Chart.min.js' %}"></script>
 <script src="{% static 'js/status.js' %}"></script>
 <link rel="stylesheet" href="{% static 'css/status.css' %}" type="text/css" media="screen" />
 
 <title>Status</title>
 
 <p id="status_title">Status Page</p>
-<div id="status_div">
+
+<div class="chart-container" style="position: relative; height:40vh; width:40vw">
+    <canvas id="chartjs_canvas"></canvas>
+</div>
+
+<div id="status_div" style="position: relative">
     <button id="send_message_button">
         Send Message
     </button>
