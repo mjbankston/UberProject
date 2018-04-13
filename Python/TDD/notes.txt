@@ -1,0 +1,14 @@
+Installed python nose for TDD practice with:
+    pip install nose
+
+2 ways to run tests.py:
+    nosetests tests.py
+    python tests.py (runs unittest.main())
+
+Installed pytest for TDD practice with:
+    pip install pytest
+
+Pytest uses a different test format
+    Added pytest_tests.py for examples
+    Run with:
+        py.test pytest_tests.py
