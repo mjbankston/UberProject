@@ -73,11 +73,11 @@ $ ->
                         beginAtZero: true
     )
     
-    $('#chart_tab_button').click ->
-        openTab($('#chart_tab'))
+    $('#information_tab_button').click ->
+        openTab($('#information_tab'))
 
-    $('#send_message_tab_button').click ->
-        openTab($('#send_message_tab'))
+    $('#commands_tab_button').click ->
+        openTab($('#commands_tab'))
 
     $('#help_tab_button').click ->
         openTab($('#help_tab'))

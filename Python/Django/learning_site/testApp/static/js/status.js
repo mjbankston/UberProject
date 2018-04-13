@@ -72,11 +72,11 @@
         }
       }
     });
-    $('#chart_tab_button').click(function() {
-      return openTab($('#chart_tab'));
+    $('#information_tab_button').click(function() {
+      return openTab($('#information_tab'));
     });
-    $('#send_message_tab_button').click(function() {
-      return openTab($('#send_message_tab'));
+    $('#commands_tab_button').click(function() {
+      return openTab($('#commands_tab'));
     });
     return $('#help_tab_button').click(function() {
       return openTab($('#help_tab'));

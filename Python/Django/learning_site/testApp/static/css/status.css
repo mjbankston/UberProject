@@ -2,9 +2,17 @@ body {
   background-color: whitesmoke;
 }
 
-#status_title {
-  color: white;
-  font-size: 2em;
+#sidebar {
+  width: 10%;
+}
+
+.tabcontent {
+  margin-left: 10%;
+  display: none;
+}
+
+#information_tab {
+  display: block;
 }
 
 #chart_container {
@@ -13,15 +21,7 @@ body {
   width: 600;
 }
 
-.tabcontent {
-  margin-left: 10%;
-  display: none;
-}
-
-#sidebar {
-  width: 10%;
-}
-
-#chart_tab {
-  display: block;
+#status_title {
+  color: white;
+  font-size: 2em;
 }
