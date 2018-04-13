@@ -56,5 +56,14 @@ Working on Websockets + RabbitMQ
     Added a bunch of statements to send and receive messages in the status.coffee file by using channels.WebSocketBridge from websocketbridge.js.
     Added consumers.py to the testApp folder.
     Had a problem with WebSocketBridge object throwing an error in the browser developer tools during send because I was sending a message too quickly after setting up the object since it had not connected yet.
+    Solved the problem of pika blocking on waiting for RabbitMQ messages by using Python threading to put it on another thread.
+        The threaded message broker still uses the callback to the WebSocketConsumer and this works fine despite running on two different threads.
 
 Setup using built-in Django server logging in consumers.py
+
+Installed selenium for writing browser based unit tests
+    pip install selenium
+    Created functional_tests.py for selenium tests
+    Downloaded 64 bit 'geckodriver.exe' from GitHub and put in at C:\Python36\Scripts to ensure it's in the PATH
+    FireFox selenium tests would now work at this point with:
+        python functional_tests.py
