@@ -51,6 +51,7 @@ def _start_thread():
         _connection.ioloop.start()
     except Exception as ex:
         logger.error(ex)
+    finally:
         _connection.close()
         _connection.ioloop.start()
 
@@ -60,20 +61,6 @@ def _connect():
     _connection = pika.SelectConnection(
         pika.ConnectionParameters(host='localhost'),
         _on_connected)
-    #_channel = _connection.channel()
-    # _channel.exchange_declare(exchange='status',
-    #                          exchange_type='fanout')
-
-    #result = _channel.queue_declare(exclusive=True)
-    #queue_name = result.method.queue
-
-    # _channel.queue_bind(exchange='status',
-    #                    queue=queue_name)
-
-    # _channel.basic_consume(_callback,
-    #                       queue=queue_name,
-    #                       no_ack=True)
-
     _consuming_thread = threading.Thread(
         target=_start_thread, daemon=True)
     _consuming_thread.start()
@@ -88,3 +75,21 @@ def start_streaming(callback):
 def stop_streaming(callback):
     if callback in _callback_functions:
         _callback_functions.remove(callback)
+
+
+def send_queue_message(queue_name, msg):
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters('localhost'))
+    try:
+        channel = connection.channel()
+        channel.queue_declare(queue=queue_name, durable=True)
+        channel.publish(exchange='',
+                        routing_key=queue_name,
+                        body=str(msg),
+                        properties=pika.BasicProperties(
+                            delivery_mode=2,  # make message persistent
+                        ))
+    except Exception as ex:
+        logger.error(ex)
+    finally:
+        connection.close()

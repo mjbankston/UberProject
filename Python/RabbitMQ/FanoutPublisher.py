@@ -1,6 +1,11 @@
 import pika
 import time
 import random
+import CommandListener
+
+status_random_numbers = True
+
+CommandListener
 
 # Create a connection using all defaults (username, password, port, etc...) on localhost
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))

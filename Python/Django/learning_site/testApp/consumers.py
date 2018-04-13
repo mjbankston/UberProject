@@ -18,7 +18,6 @@ class StatusConsumer(WebsocketConsumer):
         }))
 
     def connect(self):
-        logger.info('Accepting a new connection...')
         self.accept()
         messaging_utils.start_streaming(self.status_callback)
 
@@ -36,7 +35,4 @@ class StatusConsumer(WebsocketConsumer):
                 message = payload['message']
         elif 'message' in text_data_json:
             message = text_data_json['message']
-
-        self.send(text_data=json.dumps({
-            'message': message
-        }))
+        messaging_utils.send_queue_message('command', message)
