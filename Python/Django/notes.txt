@@ -67,3 +67,10 @@ Installed selenium for writing browser based unit tests
     Downloaded 64 bit 'geckodriver.exe' from GitHub and put in at C:\Python36\Scripts to ensure it's in the PATH
     FireFox selenium tests would now work at this point with:
         python functional_tests.py
+
+Worked on creating a separate Python package for RabbitMQ messaging shared among my Python projects
+    Put the Python package in C:\Users\mbankston\Documents\UberProject\Python\mq_messaging
+    Needed to add C:\Users\mbankston\Documents\UberProject\Python to the PYTHONPATH
+        In User PYTHONPATH, and needed to restart Visual Studio Code for it to take effect.
+
+

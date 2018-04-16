@@ -3,7 +3,7 @@ import logging
 import pika
 import threading
 
-logger = logging.getLogger('django.server')
+logger = logging.getLogger('mq_messaging')
 
 
 class BroadcastListener:
