@@ -1,6 +1,7 @@
 from channels.generic.websocket import WebsocketConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
-from . import messaging_utils
+from .mq_messaging.interfaces import BroadcastListener
+from .mq_messaging.interfaces import QueueSender
 import json
 import logging
 import time
@@ -12,6 +13,11 @@ logger = logging.getLogger('django.server')
 
 class StatusConsumer(WebsocketConsumer):
 
+    def __init__(self, scope):
+        super().__init__(scope)
+        self.status_broadcast_listener = BroadcastListener('status')
+        self.queue_sender = QueueSender()
+
     def status_callback(self, body):
         self.send(text_data=json.dumps({
             'value': str(int(body))
@@ -19,20 +25,27 @@ class StatusConsumer(WebsocketConsumer):
 
     def connect(self):
         self.accept()
-        messaging_utils.start_streaming(self.status_callback)
+        self.status_broadcast_listener.start_listening(self.status_callback)
 
     def disconnect(self, close_code):
-        messaging_utils.stop_streaming(self.status_callback)
-        pass
+        self.status_broadcast_listener.stop_listening(self.status_callback)
 
     def receive(self, text_data=None, bytes_data=None):
-        logger.info('WebSocket Consumer received a message: ' + text_data)
+        if text_data is None:
+            logger.info(
+                'Websocket Consumer received a message but there is no text_data.')
+            return
         text_data_json = json.loads(text_data)
         message = 'Couldn\'t parse message.'
-        if 'payload' in text_data_json:
+        if 'stream' in text_data_json:
             payload = text_data_json['payload']
             if 'message' in payload:
                 message = payload['message']
-        elif 'message' in text_data_json:
-            message = text_data_json['message']
-        messaging_utils.send_queue_message('command', message)
+        elif 'sender' in text_data_json:
+            if 'message' in text_data_json:
+                message = text_data_json['message']
+                if text_data_json['sender'] == 'command_button':
+                    self.queue_sender.send_queue_message('command', message)
+        else:
+            logger.error(
+                'WebSocket Consumer received a message without a sender field!')

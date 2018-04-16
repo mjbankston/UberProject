@@ -123,3 +123,4 @@ STATIC_URL = '/static/'
 
 # Needed for channels
 ASGI_APPLICATION = 'testSite.routing.application'
+

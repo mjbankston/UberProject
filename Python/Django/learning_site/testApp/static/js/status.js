@@ -20,12 +20,10 @@
     webSocketBridge.demultiplex('message_stream', function(msg_ob, stream) {
       return console.info('Received message from message_stream...', msg_ob, stream);
     });
-    $('#send_message_button').click(function(e) {
-      webSocketBridge.send({
-        message: "Example message text."
-      });
-      return webSocketBridge.stream('message_stream').send({
-        message: "Example streaming text."
+    $('#send_command_button').click(function(e) {
+      return webSocketBridge.send({
+        sender: 'command_button',
+        message: "Example command message."
       });
     });
     ctx = $('#chartjs_canvas')[0].getContext('2d');

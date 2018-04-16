@@ -1,34 +1,42 @@
 import pika
 import time
 
-_parent_callback = None
-_channel = None
+parent_callback = None
+channel = None
 
 
-def _command_callback(ch, method, properties, body):
-    print('Received command: ' + str(body), end='', flush=True)
+def command_callback(ch, method, properties, body):
+    print('Received command: ' + str(body))
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
-def _start_consuming():
+
+def start_consuming():
     print('Waiting for commands...')
-    _channel.start_consuming()
+    channel.start_consuming()
 
 
 def start_command_listener(callback):
-    global _parent_callback, _channel
-    _parent_callback = callback
-    _connection = pika.BlockingConnection(
+    global parent_callback, channel
+    parent_callback = callback
+    connection = pika.BlockingConnection(
         pika.ConnectionParameters('localhost'))
 
-    _channel = _connection.channel()
+    channel = connection.channel()
 
-    _channel.queue_declare(queue='command', durable=True)
+    channel.queue_declare(queue='command', durable=True)
 
     # Set prefetch_count to 1 to ensure each worker only gets one message a time.
     # This is to defeat dumb round-robin task queuing.
-    _channel.basic_qos(prefetch_count=1)
+    channel.basic_qos(prefetch_count=1)
 
-    _channel.basic_consume(_command_callback,
-                           queue='command')
+    channel.basic_consume(command_callback,
+                          queue='command')
 
-    _start_consuming()
+    try:
+        start_consuming()
+    except KeyboardInterrupt:
+        connection.close()
+
+
+if __name__ == '__main__':
+    start_command_listener(command_callback)
