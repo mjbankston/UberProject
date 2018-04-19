@@ -1,7 +1,7 @@
 from channels.generic.websocket import WebsocketConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
 from mq_messaging.interfaces import BroadcastListener
-from mq_messaging.interfaces import QueueSender
+from mq_messaging.interfaces import QueuePublisher
 import json
 import logging
 import time
@@ -15,8 +15,9 @@ class StatusConsumer(WebsocketConsumer):
 
     def __init__(self, scope):
         super().__init__(scope)
-        self.status_broadcast_listener = BroadcastListener('status')
-        self.queue_sender = QueueSender()
+        self.status_broadcast_listener = BroadcastListener(
+            'localhost', 'status')
+        self.queue_publisher = QueuePublisher('localhost')
 
     def status_callback(self, body):
         self.send(text_data=json.dumps({
@@ -45,7 +46,8 @@ class StatusConsumer(WebsocketConsumer):
             if 'message' in text_data_json:
                 message = text_data_json['message']
                 if text_data_json['sender'] == 'command_button':
-                    self.queue_sender.send_queue_message('command', message)
+                    self.queue_publisher.publish_queue_message(
+                        'command', message)
         else:
             logger.error(
                 'WebSocket Consumer received a message without a sender field!')
