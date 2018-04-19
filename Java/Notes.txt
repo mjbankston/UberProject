@@ -61,3 +61,10 @@ Added VS Code launch option by using Debug->Add Configuration...
         "java.configuration.maven.userSettings": "C:\\apache-maven-3.5.3\\conf\\settings.xml"
         "java.home": "C:\\Program Files\\Java\\jdk-10.0.1"
     
+Got sources and javadoc for the satellites project
+    Ran these two commands in the satellites folder to download everything:
+        mvn dependency:sources
+        mvn dependency:resolve -Dclassifier=javadoc
+    Then needed to run this command to update the project to point to them:
+        mvn eclipse:eclipse
+    
