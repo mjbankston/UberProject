@@ -1,0 +1,63 @@
+Installed JDK 10.0.1 from Oracle website
+Changed JDK_HOME and JAVA_HOME system environment variables to C:\Program Files\Java\jdk-10.0.1
+Added C:\Program Files\Java\jdk-10.0.1\bin to PATH system environment variable
+
+Installed Maven by download apache-maven-3.5.3-bin.zip from Maven website
+    Unzipped apache-maven-3.5.3 folder into C:\
+    Added C:\apache-maven-3.5.3\bin to system environment variables
+
+Running mvn -v from command line now gives:
+    Apache Maven 3.5.3 (3383c37e1f9e9b3bc3df5050c29c8aff9f295297; 2018-02-24T12:49:05-07:00)
+    Maven home: C:\apache-maven-3.5.3\bin\..
+    Java version: 10.0.1, vendor: Oracle Corporation
+    Java home: C:\Program Files\Java\jdk-10.0.1
+    Default locale: en_US, platform encoding: Cp1252
+    OS name: "windows 10", version: "10.0", arch: "amd64", family: "windows"
+
+Installed Java Extension Pack extension into VS Code
+    This installs extensions:
+        Language Support for Java(TM) by Red Hat
+        Java Test Runner
+        Debugger for Java
+        Maven Project Explorer 
+
+Needed to add proxy information into Maven settings.
+    Added the following to C:\apache-maven-3.5.3\conf\settings.xml
+        <proxies>
+            <proxy>
+                <id>MITRE</id>
+                <active>true</active>
+                <protocol>http</protocol>
+                <host>gatekeeper.mitre.org</host>
+                <port>80</port>
+                <nonProxyHosts>127.0.0.1|localhost</nonProxyHosts>
+            </proxy>
+        </proxies>
+
+Needed to add proxy information to VS Code
+    Two ways to do it:
+        Add system environment variable http_proxy=http://gatekeeper.mitre.org:80
+        Add '"http.proxy": "http://gatekeeper.mitre.org:80"' to File->Preferences->Settings
+
+To create Maven project, right-clicked on my project Java folder and selected Generate from Maven Archetype
+    Selected the Java folder
+    In Command Palette popup, selected maven-archetype-quickstart
+    Lots of packages downloaded
+    Used 'satellites' for both groupId and artifactId
+    Used defaults for the next two
+
+In the VS Code explorer, under MAVEN PROJECTS, right-clicked experiments and selected compile
+    Had an error where compile source and target were version 1.5 and this was unsupported
+        Found out I needed to add source and target Java versions in pom.xml under properties tag:
+            <maven.compiler.source>10</maven.compiler.source>
+            <maven.compiler.target>10</maven.compiler.target>
+
+Running maven target 'test' on satellites project now worked
+
+Added VS Code launch option by using Debug->Add Configuration...
+    Added java launch and used satellites.App as main class
+    I was getting "Build Failed" errors without explanation from Java Debugger extension
+    This didn't work until I added the following settings to VS Code settings:
+        "java.configuration.maven.userSettings": "C:\\apache-maven-3.5.3\\conf\\settings.xml"
+        "java.home": "C:\\Program Files\\Java\\jdk-10.0.1"
+    

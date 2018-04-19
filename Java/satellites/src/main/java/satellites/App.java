@@ -1,4 +1,4 @@
-package experiments;
+package satellites;
 
 import java.io.File;
 
