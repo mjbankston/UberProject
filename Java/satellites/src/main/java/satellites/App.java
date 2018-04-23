@@ -149,19 +149,19 @@ public class App {
                 .println("Distance/Doppler from monitor 2 to satellite 2:\t\t" + dm22 + " meters / " + dopM22 + " Hz");
         System.out.println();
 
-        // Determine DTO (Difference Time of Arrival) of each station to both satellites
-        double targetDTO = (dt1 - dt2) / Constants.SPEED_OF_LIGHT;
-        double mon1DTO = (dm11 - dm12) / Constants.SPEED_OF_LIGHT;
-        double mon2DTO = (dm21 - dm22) / Constants.SPEED_OF_LIGHT;
+        // Determine TDOA (Time Difference of Arrival) of each station to both satellites
+        double targetTDOA = (dt1 - dt2) / Constants.SPEED_OF_LIGHT;
+        double mon1TDOA = (dm11 - dm12) / Constants.SPEED_OF_LIGHT;
+        double mon2TDOA = (dm21 - dm22) / Constants.SPEED_OF_LIGHT;
 
-        // Determine DFO (Difference Frequency of Arrival) of each station to both satellites
-        double targetDFO = (dopT1 - dopT2) / Constants.SPEED_OF_LIGHT;
-        double mon1DFO = (dopM11 - dopM12) / Constants.SPEED_OF_LIGHT;
-        double mon2DFO = (dopM21 - dopM22) / Constants.SPEED_OF_LIGHT;
+        // Determine FDOA (Frequency Difference of Arrival) of each station to both satellites
+        double targetFDOA = (dopT1 - dopT2) / Constants.SPEED_OF_LIGHT;
+        double mon1FDOA = (dopM11 - dopM12) / Constants.SPEED_OF_LIGHT;
+        double mon2FDOA = (dopM21 - dopM22) / Constants.SPEED_OF_LIGHT;
 
-        System.out.println("Target DTO/DFO:\t\t\t\t\t\t" + targetDTO + " meters / " + targetDFO + " Hz");
-        System.out.println("Monitor 1 DTO/DFO:\t\t\t\t\t" + mon1DTO + " meters / " + mon1DFO + " Hz");
-        System.out.println("Monitor 2 DTO/DFO:\t\t\t\t\t" + mon2DTO + " meters / " + mon2DFO + " Hz");
+        System.out.println("Target TDOA/FDOA:\t\t\t\t\t" + targetTDOA + " meters / " + targetFDOA + " Hz");
+        System.out.println("Monitor 1 TDOA/FDOA:\t\t\t\t\t" + mon1TDOA + " meters / " + mon1FDOA + " Hz");
+        System.out.println("Monitor 2 TDOA/FDOA:\t\t\t\t\t" + mon2TDOA + " meters / " + mon2FDOA + " Hz");
     }
 
     private static void initOreKit() throws OrekitException {
