@@ -16,6 +16,7 @@ import org.orekit.data.DirectoryCrawler;
 import org.orekit.errors.OrekitException;
 import org.orekit.frames.Frame;
 import org.orekit.frames.FramesFactory;
+import org.orekit.frames.TopocentricFrame;
 import org.orekit.orbits.KeplerianOrbit;
 import org.orekit.orbits.Orbit;
 import org.orekit.orbits.OrbitType;
@@ -28,21 +29,33 @@ import org.orekit.time.AbsoluteDate;
 import org.orekit.time.TimeScale;
 import org.orekit.time.TimeScalesFactory;
 import org.orekit.utils.Constants;
+import org.orekit.utils.IERSConventions;
 import org.orekit.utils.PVCoordinates;
 
 public class App {
 
-    // The target coordinates (Colorado Springs)
+    public static final String orekitPhysicalDataLocation = "C:\\orekit-data";
+
+    // Target
+    // Signal frequency (Hz)
+    public static double targetFreq = 12e6;
+    // Coordinates (Colorado Springs)
     public static double targetLatDegrees = 38.8;
     public static double targetLonDegrees = -104.8;
     public static double targetAltMeters = 1750.0;
 
-    // Monitoring station 1 coordinates (San Antonio)
+    // Monitoring station 1
+    // Signal frequency (Hz)
+    public static double mon1Freq = 11.75e6;
+    // Coordinates (San Antonio)
     public static double mon1LatDegrees = 29.4;
     public static double mon1LonDegrees = -98.5;
     public static double mon1AltMeters = 198.0;
 
-    // Monitoring station 2 coordinates (San Diego)
+    // Monitoring station 2
+    // Signal frequency (Hz)
+    public static double mon2Freq = 12.25e6;
+    // Coordinates (San Diego)
     public static double mon2LatDegrees = 32.7;
     public static double mon2LonDegrees = -117.15;
     public static double mon2AltMeters = 19.0;
@@ -86,59 +99,99 @@ public class App {
 
         // Propagate the two given satellite TLE's to the current time using the Orekit TLE SGP4/SDP4 propagator.
         // This currenty does not check TLE epoch vs current time to determine how realistic this propagation is.
-        PVCoordinates sat1Coor = propagateTLE(tle1Line1, tle1Line2, now);
+        SpacecraftState sat1State = propagateTLE(tle1Line1, tle1Line2, now);
         System.out.println("\nSatellite 1 TLE:\n" + tle1Line1 + '\n' + tle1Line2 + '\n');
-        System.out.println("Propagated to " + sat1Coor + '\n');
-        PVCoordinates sat2Coor = propagateTLE(tle2Line1, tle2Line2, now);
+        System.out.println("Propagated to " + sat1State.getPVCoordinates() + '\n');
+        SpacecraftState sat2State = propagateTLE(tle2Line1, tle2Line2, now);
         System.out.println("Satellite 2 TLE:\n" + tle2Line1 + '\n' + tle2Line2 + '\n');
-        System.out.println("Propagated to " + sat2Coor + '\n');
+        System.out.println("Propagated to " + sat2State.getPVCoordinates() + '\n');
 
         // Create a BodyShape object of Earth in an unintutive way for measuring/manipulating coordinates and distances.
         // Uses WGS84 data and IERS_1996 data to build the shape. Supposedly, this is compatible with SGP4/SDP4 TLE propagation.
+        Frame earthFrame = FramesFactory.getITRF(IERSConventions.IERS_2010, true);
         BodyShape earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
-                Constants.WGS84_EARTH_FLATTENING, FramesFactory.getTEME());
+                Constants.WGS84_EARTH_FLATTENING, earthFrame);
 
-        // Take the lat/lon/height of ground stations and convert to 3D vectors in the same coordinate frame as the satellite location propagation.
-        Vector3D targetPosition = earth.transform(target);
-        Vector3D mon1Position = earth.transform(mon1);
-        Vector3D mon2Position = earth.transform(mon2);
+        TopocentricFrame targetFrame = new TopocentricFrame(earth, target, "TargetFrame");
+        TopocentricFrame mon1Frame = new TopocentricFrame(earth, mon1, "MonitoringStation1Frame");
+        TopocentricFrame mon2Frame = new TopocentricFrame(earth, mon2, "MonitoringStation2Frame");
 
-        // Determine all combinations of distance from ground to satellite.
-        double dt1 = Vector3D.distance(targetPosition, sat1Coor.getPosition());
-        double dt2 = Vector3D.distance(targetPosition, sat2Coor.getPosition());
+        PVCoordinates targetVSsat1 = sat1State.getPVCoordinates(targetFrame);
+        double dt1 = targetVSsat1.getPosition().getNorm();
+        double dopT1 = computeDopplerShift(targetFreq, targetVSsat1);
+        PVCoordinates targetVSsat2 = sat2State.getPVCoordinates(targetFrame);
+        double dt2 = targetVSsat2.getPosition().getNorm();
+        double dopT2 = computeDopplerShift(targetFreq, targetVSsat2);
 
-        double dm11 = Vector3D.distance(mon1Position, sat1Coor.getPosition());
-        double dm12 = Vector3D.distance(mon1Position, sat2Coor.getPosition());
+        PVCoordinates mon1VSsat1 = sat1State.getPVCoordinates(mon1Frame);
+        double dm11 = mon1VSsat1.getPosition().getNorm();
+        double dopM11 = computeDopplerShift(mon1Freq, mon1VSsat1);
+        PVCoordinates mon1VSsat2 = sat2State.getPVCoordinates(mon1Frame);
+        double dm12 = mon1VSsat2.getPosition().getNorm();
+        double dopM12 = computeDopplerShift(mon1Freq, mon1VSsat2);
 
-        double dm21 = Vector3D.distance(mon2Position, sat1Coor.getPosition());
-        double dm22 = Vector3D.distance(mon2Position, sat2Coor.getPosition());
+        PVCoordinates mon2VSsat1 = sat1State.getPVCoordinates(mon2Frame);
+        double dm21 = mon2VSsat1.getPosition().getNorm();
+        double dopM21 = computeDopplerShift(mon2Freq, mon2VSsat1);
+        PVCoordinates mon2VSsat2 = sat2State.getPVCoordinates(mon2Frame);
+        double dm22 = mon2VSsat2.getPosition().getNorm();
+        double dopM22 = computeDopplerShift(mon2Freq, mon2VSsat2);
 
-        System.out.println("Distance from target to satellite 1:               " + dt1 + " meters.");
-        System.out.println("Distance from target to satellite 1:               " + dt2 + " meters.");
-        System.out.println("Distance from monitoring station 1 to satellite 1: " + dm11 + " meters.");
-        System.out.println("Distance from monitoring station 1 to satellite 1: " + dm12 + " meters.");
-        System.out.println("Distance from monitoring station 2 to satellite 1: " + dm21 + " meters.");
-        System.out.println("Distance from monitoring station 2 to satellite 1: " + dm22 + " meters.");
+        System.out.println("Distance/Doppler from target to satellite 1:\t\t" + dt1 + " meters / " + dopT1 + " Hz");
+        System.out.println("Distance/Doppler from target to satellite 2:\t\t" + dt2 + " meters / " + dopT2 + " Hz");
+        System.out
+                .println("Distance/Doppler from monitor 1 to satellite 1:\t\t" + dm11 + " meters / " + dopM11 + " Hz");
+        System.out
+                .println("Distance/Doppler from monitor 1 to satellite 2:\t\t" + dm12 + " meters / " + dopM12 + " Hz");
+        System.out
+                .println("Distance/Doppler from monitor 2 to satellite 1:\t\t" + dm21 + " meters / " + dopM21 + " Hz");
+        System.out
+                .println("Distance/Doppler from monitor 2 to satellite 2:\t\t" + dm22 + " meters / " + dopM22 + " Hz");
+        System.out.println();
 
+        // Determine DTO (Difference Time of Arrival) of each station to both satellites
+        double targetDTO = (dt1 - dt2) / Constants.SPEED_OF_LIGHT;
+        double mon1DTO = (dm11 - dm12) / Constants.SPEED_OF_LIGHT;
+        double mon2DTO = (dm21 - dm22) / Constants.SPEED_OF_LIGHT;
+
+        // Determine DFO (Difference Frequency of Arrival) of each station to both satellites
+        double targetDFO = (dopT1 - dopT2) / Constants.SPEED_OF_LIGHT;
+        double mon1DFO = (dopM11 - dopM12) / Constants.SPEED_OF_LIGHT;
+        double mon2DFO = (dopM21 - dopM22) / Constants.SPEED_OF_LIGHT;
+
+        System.out.println("Target DTO/DFO:\t\t\t\t\t\t" + targetDTO + " meters / " + targetDFO + " Hz");
+        System.out.println("Monitor 1 DTO/DFO:\t\t\t\t\t" + mon1DTO + " meters / " + mon1DFO + " Hz");
+        System.out.println("Monitor 2 DTO/DFO:\t\t\t\t\t" + mon2DTO + " meters / " + mon2DFO + " Hz");
     }
 
     private static void initOreKit() throws OrekitException {
-        File orekitData = new File("C:\\orekit-data");
+        File orekitData = new File(orekitPhysicalDataLocation);
+        if (!orekitData.exists()) {
+            throw new RuntimeException(
+                    "Unrecoverable error: Could not locate orekit physical data at default location of '"
+                            + orekitPhysicalDataLocation + "'!");
+        }
         DataProvidersManager manager = DataProvidersManager.getInstance();
         manager.addProvider(new DirectoryCrawler(orekitData));
     }
 
-    public static PVCoordinates propagateTLE(String tleLine1, String tleLine2, Date date) throws OrekitException {
+    public static double computeDopplerShift(double signalFrequencyHz, PVCoordinates relativePV) {
+        return (targetFreq / Constants.SPEED_OF_LIGHT)
+                * (Vector3D.dotProduct(relativePV.getPosition(), relativePV.getVelocity())
+                        / relativePV.getPosition().getNorm());
+    }
+
+    public static SpacecraftState propagateTLE(String tleLine1, String tleLine2, Date date) throws OrekitException {
         TLE tle = buildTLEFromLines(tleLine1, tleLine2);
         TLEPropagator tleProp = TLEPropagator.selectExtrapolator(tle);
         SpacecraftState state = tleProp.propagate(new AbsoluteDate(date, TimeScalesFactory.getUTC()));
-        return state.getPVCoordinates();
+        return state;
     }
 
     public static TLE buildTLEFromLines(String tleLine1, String tleLine2) throws OrekitException {
         // Always test if TLE is good first
         if (!TLE.isFormatOK(tleLine1, tleLine2)) {
-            throw new RuntimeException("Bad TLE format!");
+            throw new RuntimeException("Bad TLE format!\n" + tleLine1 + '\n' + tleLine2 + '\n');
         }
         return new TLE(tleLine1, tleLine2);
     }
@@ -160,7 +213,7 @@ public class App {
         Frame inertialFrame = FramesFactory.getEME2000();
 
         TimeScale utc = TimeScalesFactory.getUTC();
-        AbsoluteDate initialDate = new AbsoluteDate(2004, 01, 01, 23, 30, 00.000, utc);
+        AbsoluteDate initialDate = new AbsoluteDate(2004, 01, 01, 23, 30, 0.0, utc);
 
         double mu = 3.986004415e+14;
 
