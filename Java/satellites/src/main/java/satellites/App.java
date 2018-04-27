@@ -38,7 +38,7 @@ public class App {
 
     // Target
     // Signal frequency (Hz)
-    public static double targetFreq = 12e6;
+    public static double targetFreqHz = 12e6;
     // Coordinates (Colorado Springs)
     public static double targetLatDegrees = 38.8;
     public static double targetLonDegrees = -104.8;
@@ -46,7 +46,7 @@ public class App {
 
     // Monitoring station 1
     // Signal frequency (Hz)
-    public static double mon1Freq = 11.75e6;
+    public static double mon1FreqHz = 11.75e6;
     // Coordinates (San Antonio)
     public static double mon1LatDegrees = 29.4;
     public static double mon1LonDegrees = -98.5;
@@ -54,7 +54,7 @@ public class App {
 
     // Monitoring station 2
     // Signal frequency (Hz)
-    public static double mon2Freq = 12.25e6;
+    public static double mon2FreqHz = 12.25e6;
     // Coordinates (San Diego)
     public static double mon2LatDegrees = 32.7;
     public static double mon2LonDegrees = -117.15;
@@ -118,24 +118,24 @@ public class App {
 
         PVCoordinates targetVSsat1 = sat1State.getPVCoordinates(targetFrame);
         double dt1 = targetVSsat1.getPosition().getNorm();
-        double dopT1 = computeDopplerShift(targetFreq, targetVSsat1);
+        double dopT1 = computeDopplerShift(targetFreqHz, targetVSsat1);
         PVCoordinates targetVSsat2 = sat2State.getPVCoordinates(targetFrame);
         double dt2 = targetVSsat2.getPosition().getNorm();
-        double dopT2 = computeDopplerShift(targetFreq, targetVSsat2);
+        double dopT2 = computeDopplerShift(targetFreqHz, targetVSsat2);
 
         PVCoordinates mon1VSsat1 = sat1State.getPVCoordinates(mon1Frame);
         double dm11 = mon1VSsat1.getPosition().getNorm();
-        double dopM11 = computeDopplerShift(mon1Freq, mon1VSsat1);
+        double dopM11 = computeDopplerShift(mon1FreqHz, mon1VSsat1);
         PVCoordinates mon1VSsat2 = sat2State.getPVCoordinates(mon1Frame);
         double dm12 = mon1VSsat2.getPosition().getNorm();
-        double dopM12 = computeDopplerShift(mon1Freq, mon1VSsat2);
+        double dopM12 = computeDopplerShift(mon1FreqHz, mon1VSsat2);
 
         PVCoordinates mon2VSsat1 = sat1State.getPVCoordinates(mon2Frame);
         double dm21 = mon2VSsat1.getPosition().getNorm();
-        double dopM21 = computeDopplerShift(mon2Freq, mon2VSsat1);
+        double dopM21 = computeDopplerShift(mon2FreqHz, mon2VSsat1);
         PVCoordinates mon2VSsat2 = sat2State.getPVCoordinates(mon2Frame);
         double dm22 = mon2VSsat2.getPosition().getNorm();
-        double dopM22 = computeDopplerShift(mon2Freq, mon2VSsat2);
+        double dopM22 = computeDopplerShift(mon2FreqHz, mon2VSsat2);
 
         System.out.println("Distance/Doppler from target to satellite 1:\t\t" + dt1 + " meters / " + dopT1 + " Hz");
         System.out.println("Distance/Doppler from target to satellite 2:\t\t" + dt2 + " meters / " + dopT2 + " Hz");
@@ -176,7 +176,7 @@ public class App {
     }
 
     public static double computeDopplerShift(double signalFrequencyHz, PVCoordinates relativePV) {
-        return (targetFreq / Constants.SPEED_OF_LIGHT)
+        return (targetFreqHz / Constants.SPEED_OF_LIGHT)
                 * (Vector3D.dotProduct(relativePV.getPosition(), relativePV.getVelocity())
                         / relativePV.getPosition().getNorm());
     }
