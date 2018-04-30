@@ -68,3 +68,7 @@ Got sources and javadoc for the satellites project
     Then needed to run this command to update the project to point to them:
         mvn eclipse:eclipse
     
+Used Maven shade plugin to build a deploy jar with all dependencies built-in.
+    Added the shade plugin section in the pom.xml
+    It uses a Manifest Transformer to create the main class in the jar manifest to make a runnable jar.
+    

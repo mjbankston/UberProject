@@ -25,6 +25,11 @@
       <artifactId>orekit</artifactId>
       <version>9.1</version>
     </dependency>
+    <dependency>
+      <groupId>mq_messenger</groupId>
+      <artifactId>mq_messenger</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
