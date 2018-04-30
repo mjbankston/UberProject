@@ -1,0 +1,18 @@
+General Python Notes
+
+Added Numba example at Reference/NumbaMultiThread.py
+    pip install numba
+    Cuda functionality seems to be available only through the Ananconda framework
+
+Added PyCuda example at Reference/PyCudaRef.py
+    pip install pycuda
+    Got an error from the nvcc compiler that cl.exe was not on path.
+        Added 'C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin' to my user Path environment variable and restarted Visual Studio Code
+    This ran just fine, but PyLint seems to have trouble seeing pycuda functions and shows errors
+        Found out this was because PyLint does not import C functions because of a security feature
+        Disabled it by adding setting to User Settings:
+            "python.linting.pylintArgs": [
+                "--unsafe-load-any-extensions=yes"
+            ]
+        
+    
