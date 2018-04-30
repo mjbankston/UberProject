@@ -1,7 +1,7 @@
 from channels.generic.websocket import WebsocketConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
-from mq_messaging.interfaces import BroadcastListener
-from mq_messaging.interfaces import QueuePublisher
+from mq_messaging.messenger import BroadcastListener
+from mq_messaging.messenger import QueuePublisher
 import json
 import logging
 import time
