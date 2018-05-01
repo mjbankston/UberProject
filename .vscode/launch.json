@@ -6,7 +6,17 @@
   "configurations": [
     {
       "type": "java",
-      "name": "Debug satellites",
+      "name": "Performance Tester",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "stopOnEntry": false,
+      "mainClass": "performance_tester.App",
+      "args": ""
+    },
+    {
+      "type": "java",
+      "name": "Satellites",
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",

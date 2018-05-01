@@ -71,4 +71,8 @@ Got sources and javadoc for the satellites project
 Used Maven shade plugin to build a deploy jar with all dependencies built-in.
     Added the shade plugin section in the pom.xml
     It uses a Manifest Transformer to create the main class in the jar manifest to make a runnable jar.
-    
+
+Was having a problem with Visual Studio Code saying that the build failed when trying to run satellites.App but would work when I clicked Proceed
+    Found out it was because the Java Language Server workspace data was corrupted somehow.
+        Deleted all directories in %USER%\AppData\Roaming\Code\User\workspaceStorage
+        Restarted Visual Studio Code and reran and no longer had the problem
