@@ -6,10 +6,48 @@ import threading
 logger = logging.getLogger('mq_messaging')
 
 
-class BroadcastListener:
+class BlockingBroadcastListener:
 
-    def __init__(self, host, name):
-        self.name = name
+    def __init__(self, host, broadcast_channel_name):
+        self.name = broadcast_channel_name
+        self.host = host
+        self._connection = None
+        self._channel = None
+        self._callback_function = None
+
+    def start_listening(self, callback):
+        self._callback_function = callback
+        self._connection = pika.BlockingConnection(
+            pika.ConnectionParameters(self.host))
+        self._channel = self._connection.channel()
+        self._channel.exchange_declare(exchange=self.name,
+                                       exchange_type='fanout')
+        self._channel.queue_declare(exclusive=True)
+        self._channel.queue_bind(exchange=self.name,
+                                 queue='')
+
+        self._channel.basic_consume(self._broadcast_callback,
+                                    queue='',
+                                    no_ack=True)
+        try:
+            self._channel.start_consuming()
+        except Exception as ex:
+            logger.error(ex)
+        finally:
+            self._connection.close()
+
+    def close(self):
+        self._connection.close()
+
+    def _broadcast_callback(self, channel, method, properties, body):
+        if self._callback_function is not None:
+            self._callback_function(body)
+
+
+class AsyncBroadcastListener:
+
+    def __init__(self, host, broadcast_channel_name):
+        self.name = broadcast_channel_name
         self.host = host
         self._connection = None
         self._channel = None
@@ -48,9 +86,9 @@ class BroadcastListener:
                                  queue='')
 
     def _on_bindok(self, frame):
-        self._channel.consume(self._handle_delivery,
-                              queue='',
-                              no_ack=True)
+        self._channel.basic_consume(self._handle_delivery,
+                                    queue='',
+                                    no_ack=True)
 
     def _handle_delivery(self, channel, method, header, body):
         for callback in self._callback_functions:
@@ -69,10 +107,44 @@ class BroadcastListener:
             self._connection.ioloop.start()
 
 
-class QueueConsumer:
+class BlockingTaskConsumer:
 
-    def __init__(self, host, queue_name):
-        self.queue_name = queue_name
+    def __init__(self, host, task_name):
+        self.queue_name = task_name
+        self.host = host
+        self._connection = None
+        self._channel = None
+        self._callback_function = None
+
+    def start_listening(self, callback):
+        self._callback_function = callback
+        self._connection = pika.BlockingConnection(
+            pika.ConnectionParameters(self.host))
+        self._channel = self._connection.channel()
+        self._channel.queue_declare(queue=self.queue_name, durable=True)
+        self._channel.basic_qos(prefetch_count=1)
+        self._channel.basic_consume(self._queue_callback,
+                                    queue=self.queue_name)
+        try:
+            self._channel.start_consuming()
+        except Exception as ex:
+            logger.error(ex)
+        finally:
+            self._connection.close()
+
+    def close(self):
+        self._connection.close()
+
+    def _queue_callback(self, channel, method, properties, body):
+        if self._callback_function is not None:
+            self._callback_function(body)
+            channel.basic_ack(delivery_tag=method.delivery_tag)
+
+
+class AsyncTaskConsumer:
+
+    def __init__(self, host, task_name):
+        self.queue_name = task_name
         self.host = host
         self._connection = None
         self._channel = None
@@ -101,17 +173,13 @@ class QueueConsumer:
 
     def _on_channel_open(self, new_channel):
         self._channel = new_channel
-        self._channel.queue_declare(self._on_queue_declareok, exclusive=True)
+        self._channel.queue_declare(
+            self._on_queue_declareok, queue=self.queue_name, durable=True)
 
     def _on_queue_declareok(self, frame):
-        self._channel.queue_bind(self._on_bindok,
-                                 exchange='',
-                                 queue=self.queue_name)
-
-    def _on_bindok(self, frame):
-        self._channel.consume(self._handle_delivery,
-                              queue=self.queue_name,
-                              no_ack=False)
+        self._channel.basic_qos(prefetch_count=1)
+        self._channel.basic_consume(self._handle_delivery,
+                                    queue=self.queue_name)
 
     def _handle_delivery(self, channel, method, header, body):
         for callback in self._callback_functions:
@@ -131,29 +199,58 @@ class QueueConsumer:
             self._connection.ioloop.start()
 
 
-class QueuePublisher:
+class BroadcastPublisher:
+
+    def publish_broadcast_message(self, broadcast_channel_name, msg):
+        try:
+            if self._connection.is_closed:
+                self._connect()
+            channel = self._connection.channel()
+            channel.exchange_declare(exchange=broadcast_channel_name,
+                                     exchange_type='fanout')
+            channel.publish(exchange=broadcast_channel_name,
+                            routing_key='',
+                            body=str(msg))
+            logger.info(
+                'Successfully sent broadcast message on channel "%s"' % broadcast_channel_name)
+        except Exception as ex:
+            logger.error(ex)
 
     def __init__(self, host):
         self.host = host
         self._connection = None
         self._connect()
 
-    def publish_queue_message(self, queue_name, msg):
+    def _connect(self):
+        self._connection = pika.BlockingConnection(
+            pika.ConnectionParameters(self.host))
+
+
+class TaskPublisher:
+
+    def publish_task(self, task_name, msg, timeout=30):
         try:
             if self._connection.is_closed:
                 self._connect()
             channel = self._connection.channel()
-            channel.queue_declare(queue=queue_name, durable=True)
+            channel.queue_declare(queue=task_name, durable=True)
             channel.publish(exchange='',
-                            routing_key=queue_name,
+                            routing_key=task_name,
                             body=str(msg),
                             properties=pika.BasicProperties(
                                 delivery_mode=2,  # make message persistent
+                                # expiration needs milliseconds as a string but take timeout in seconds as an integer
+                                expiration=str(timeout*1000)
                             ))
-            logger.info('Successfully sent message to queue "' +
-                        queue_name + '"')
+            logger.info(
+                'Successfully sent task message to queue "%s"' % task_name)
         except Exception as ex:
             logger.error(ex)
+
+    def __init__(self, host):
+        self.host = host
+        self._connection = None
+        self._connect()
 
     def _connect(self):
         self._connection = pika.BlockingConnection(
