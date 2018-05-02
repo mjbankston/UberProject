@@ -5,6 +5,9 @@
 		}
 	],
 	"settings": {
-		"java.configuration.updateBuildConfiguration": "automatic"
+		"java.configuration.updateBuildConfiguration": "automatic",
+		"files.associations": {
+			"stdio.h": "c"
+		}
 	}
 }

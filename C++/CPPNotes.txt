@@ -1,0 +1,9 @@
+Had Cygwin gcc installed and updated with the bin directory on PATH.
+    Visual Studio Code automatically picked up the g++ compiler.
+
+Added a launch option in launch.json for the compiled executable.
+
+Tried to install liquid-dsp to Cygwin.
+    boostrap.sh would not run without autoconf.
+    Needed to install wrapper for autoconf and both 2.1 and 2.5 versions.
+    To get aclocal command to work, I needed to install automake 1.9.
