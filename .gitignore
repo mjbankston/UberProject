@@ -6,3 +6,6 @@ geckodriver.log
 target/
 GeneralNotes.txt
 *.exe
+Python/Cython/build/*
+Python/Cython/**/*.c
+Python/Cython/*.pyd

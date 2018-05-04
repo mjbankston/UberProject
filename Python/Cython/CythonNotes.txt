@@ -1,0 +1,8 @@
+Installed Cython
+    pip install cython
+
+Created a .pyx file and a setup.py
+
+Compiled the .pyx file to a .pyd.
+    python setup.py build_ext --inplace
+
