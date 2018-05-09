@@ -9,3 +9,4 @@ GeneralNotes.txt
 Python/Cython/build/*
 Python/Cython/**/*.c
 Python/Cython/*.pyd
+Python/Cython/**/*.dll

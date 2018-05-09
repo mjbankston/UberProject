@@ -1,8 +1,38 @@
-Installed Cython
-    pip install cython
+hello_test
+    Installed Cython
+        pip install cython
 
-Created a .pyx file and a setup.py
+    Created a .pyx file and a setup.py
 
-Compiled the .pyx file to a .pyd.
-    python setup.py build_ext --inplace
+    Compiled the .pyx file to a .pyd.
+        python setup.py build_ext --inplace
+
+Added liquidSDR to setup.py by importing liquid.h
+    After many go-arounds with mingw, decided to use Cygwin64 entirely
+    Compiled liquidSDR code in Cygwin for libliquid.a and libliquid.so to be in Cygwin's lib directory
+        FFTW3 needs to be installed
+        Just followed liquidSDR instructions for build
+    liquid.h needed to be slightly altered by changing parameters like '_N' to '_Nx' to get away from Cygwin incompatibilities
+    Put custom liquid.h in same folder as Cython/Python files
+
+setup.py written to build liquid.pyx file
+    liquid.pyx imports cliquid from cliquid.pxd which imports liquid.h which is the header file for libliquid in Cygwin
+    Compiled using custom Python 3.6 from Cygwin to pick up all libraries/headers
+        python3.6m setup.py build_ext --inplace
+
+Learned .pxd file for declaring C prototypes from .h file is unnecessary
+    Can just put them all in a .pyd file.
+
+Cython files can import prototypes from multiple .h files, which gives a nice way to split up functionality
+
+To get liquidSDR functions that use FFTW to work, I needed to download the 64-bit FFTW Windows dll/def and put them in the Cygwin /usr/lib directory.
+    libfftw3f-3.dll and libfftw3f-3.ref
+    Changed linker library to fftw3f-3
+    Needed to add "-fPIC" compiler and linker options
+    Was required to have libfftw3f-3.dll in the same path as the Cython liquid .dll when running Python.
+
+Got importing my other Python modules in the Python directory to work through Cygwin's Python
+    Needed to add another path to PYTHONPATH environment variable
+    Multiple items are separated by a ':', so original Windows path needed to be enclosed in quotes
+    Used /cygdrive/c/... as second entry that pointed to the same place as the Windows based path entry
 

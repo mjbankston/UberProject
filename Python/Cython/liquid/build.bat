@@ -1,0 +1,1 @@
+python3.6m setup.py build_ext --inplace
