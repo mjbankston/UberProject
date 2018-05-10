@@ -203,14 +203,25 @@ class BroadcastPublisher:
 
     def publish_broadcast_message(self, broadcast_channel_name, msg):
         try:
+            if self._connection is None or self._channel is None:
+                self._connect()
             if self._connection.is_closed:
                 self._connect()
-            channel = self._connection.channel()
-            channel.exchange_declare(exchange=broadcast_channel_name,
-                                     exchange_type='fanout')
-            channel.publish(exchange=broadcast_channel_name,
-                            routing_key='',
-                            body=str(msg))
+            elif self._connection.is_closing:
+                logger.warn(
+                    'Failure to broadcast message because connection is closing.')
+                return
+            if self._channel.is_closed:
+                self._channel = self._connection.channel()
+            elif self._channel.is_closing:
+                logger.warn(
+                    'Failure to broadcast message because channel is closing.')
+                return
+            self._channel.exchange_declare(exchange=broadcast_channel_name,
+                                           exchange_type='fanout')
+            self._channel.publish(exchange=broadcast_channel_name,
+                                  routing_key='',
+                                  body=json.dumps(msg))
             logger.info(
                 'Successfully sent broadcast message on channel "%s"' % broadcast_channel_name)
         except Exception as ex:
@@ -219,11 +230,16 @@ class BroadcastPublisher:
     def __init__(self, host):
         self.host = host
         self._connection = None
+        self._channel = None
         self._connect()
 
     def _connect(self):
-        self._connection = pika.BlockingConnection(
-            pika.ConnectionParameters(self.host))
+        try:
+            self._connection = pika.BlockingConnection(
+                pika.ConnectionParameters(self.host))
+            self._channel = self._connection.channel()
+        except Exception as ex:
+            logger.error(ex)
 
 
 class TaskPublisher:
@@ -236,7 +252,7 @@ class TaskPublisher:
             channel.queue_declare(queue=task_name, durable=True)
             channel.publish(exchange='',
                             routing_key=task_name,
-                            body=str(msg),
+                            body=json.dumps(msg),
                             properties=pika.BasicProperties(
                                 delivery_mode=2,  # make message persistent
                                 # expiration needs milliseconds as a string but take timeout in seconds as an integer
