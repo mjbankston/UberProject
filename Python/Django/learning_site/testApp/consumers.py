@@ -1,7 +1,6 @@
 from channels.generic.websocket import WebsocketConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
-from mq_messaging.messenger import BroadcastListener
-from mq_messaging.messenger import QueuePublisher
+import mq_messaging.messenger as mq
 import json
 import logging
 import time
@@ -15,21 +14,44 @@ class StatusConsumer(WebsocketConsumer):
 
     def __init__(self, scope):
         super().__init__(scope)
-        self.status_broadcast_listener = BroadcastListener(
-            'localhost', 'status')
-        self.queue_publisher = QueuePublisher('localhost')
+        self.signal_waveform_listener = mq.AsyncBroadcastListener(
+            'localhost', 'signal_waveform')
+        self.signal_psd_listener = mq.AsyncBroadcastListener(
+            'localhost', 'psd')
+        self.queue_publisher = mq.TaskPublisher('localhost')
 
-    def status_callback(self, body):
+    def signal_waveform_callback(self, body):
+        ob = json.loads(body)
+        real = []
+        imag = []
+        for c in ob:
+            real.append(c[0])
+            imag.append(c[1])
         self.send(text_data=json.dumps({
-            'value': str(int(body))
+            'type': 'signal',
+            'real': real,
+            'imag': imag
+        }))
+
+    def psd_callback(self, body):
+        ob = json.loads(body)
+        self.send(text_data=json.dumps({
+            'type': 'psd',
+            'psd': ob,
         }))
 
     def connect(self):
         self.accept()
-        self.status_broadcast_listener.start_listening(self.status_callback)
+        self.signal_waveform_listener.start_listening(
+            self.signal_waveform_callback)
+        self.signal_psd_listener.start_listening(
+            self.psd_callback)
 
     def disconnect(self, close_code):
-        self.status_broadcast_listener.stop_listening(self.status_callback)
+        self.signal_waveform_listener.stop_listening(
+            self.signal_waveform_callback)
+        self.signal_psd_listener.stop_listening(
+            self.psd_callback)
 
     def receive(self, text_data=None, bytes_data=None):
         if text_data is None:

@@ -11,7 +11,7 @@
 
 <div id="sidebar" class="w3-sidebar w3-bar-block w3-blue-gray">
     <h3 class="w3-bar-item w3-border-bottom">
-        <b>BH Admin</b>
+        <b>Status</b>
     </h3>
     <button class="w3-bar-item w3-button w3-border-bottom w3-hover-red" id="information_tab_button">Information</button>
     <button class="w3-bar-item w3-button w3-border-bottom w3-hover-red" id="commands_tab_button">Commands</button>
@@ -20,7 +20,10 @@
 
 <div class="tabcontent" id="information_tab">
     <div class="w3-container" id="chart_container">
-        <canvas id="chartjs_canvas"></canvas>
+        {% comment %}
+        <canvas id="signal_real_chartjs_canvas"></canvas>
+        <canvas id="signal_imag_chartjs_canvas"></canvas> {% endcomment %}
+        <canvas id="psd_chartjs_canvas"></canvas>
     </div>
 </div>
 

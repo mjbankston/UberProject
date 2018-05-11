@@ -17,8 +17,8 @@ body {
 
 #chart_container {
   position: relative;
-  height: 400;
-  width: 600;
+  height: 1000;
+  width: 1200;
 }
 
 #status_title {
