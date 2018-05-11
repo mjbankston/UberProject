@@ -7,3 +7,13 @@ Tried to install liquid-dsp to Cygwin.
     boostrap.sh would not run without autoconf.
     Needed to install wrapper for autoconf and both 2.1 and 2.5 versions.
     To get aclocal command to work, I needed to install automake 1.9.
+
+MinGW-64
+    Installed MinGW-64.
+        Required setting up the proxy with the http_proxy environment variable.
+        Downloaded the entire MinGW_64 repository.
+            wget -r -N --no-parent --no-host-directories http://win-builds.org/1.5.0/packages/
+        Downloaded win-builds 1.5.0.
+            Needed to rename the executable to win-builds.exe.
+        Installed MinGW into C:\MinGW_64
+    Added C:\MinGW_64\bin to PATH.
