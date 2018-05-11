@@ -14,5 +14,14 @@ Added PyCuda example at Reference/PyCudaRef.py
             "python.linting.pylintArgs": [
                 "--unsafe-load-any-extensions=yes"
             ]
-        
+
+PYTHONPATH must be set with additional directories to find Python modules
+    Added one entry for the UberProject/Python directory to find all modules in that directory
+
+Got importing my other Python modules in the Python directory to work through Cygwin's Python
+    Needed to add another path to PYTHONPATH environment variable
+    Used /cygdrive/c/... as second entry that pointed to the same place as the Windows based path entry
+    Multiple items are separated by a ':' on Cygwin, but ';' on Windows
+    Trick was to use a ';' first followed by a ':'
+        Windows Python just ignores the bad path after the semicolon and Cygwin Python ignores the two ('C:' followed by rest) bad paths and uses the one immediately after the second ':'
     

@@ -30,9 +30,3 @@ To get liquidSDR functions that use FFTW to work, I needed to download the 64-bi
     Changed linker library to fftw3f-3
     Needed to add "-fPIC" compiler and linker options
     Was required to have libfftw3f-3.dll in the same path as the Cython liquid .dll when running Python.
-
-Got importing my other Python modules in the Python directory to work through Cygwin's Python
-    Needed to add another path to PYTHONPATH environment variable
-    Multiple items are separated by a ':', so original Windows path needed to be enclosed in quotes
-    Used /cygdrive/c/... as second entry that pointed to the same place as the Windows based path entry
-
