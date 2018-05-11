@@ -1,9 +1,16 @@
+package mq_messenger;
+
 import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+
 import com.rabbitmq.client.Channel;
 
 class Messenger {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, TimeoutException {
         ConnectionFactory factory = new ConnectionFactory();
 
         //factory.setUsername("guest"); // Default is 'guest'
