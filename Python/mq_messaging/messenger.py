@@ -2,6 +2,8 @@ import json
 import logging
 import pika
 import threading
+import signal
+import time
 
 logger = logging.getLogger('mq_messaging')
 
@@ -62,12 +64,17 @@ class AsyncBroadcastListener:
         if callback in self._callback_functions:
             self._callback_functions.remove(callback)
 
+    def close(self):
+        self._connection.close()
+        self._connection.ioloop.start()
+
     def _connect(self):
         self._connection = pika.SelectConnection(
             pika.ConnectionParameters(host=self.host),
             self._on_connected)
         self._consuming_thread = threading.Thread(
-            target=self._start_thread, daemon=True)
+            target=self._start_thread)
+        self._consuming_thread.daemon = True
         self._consuming_thread.start()
 
     def _on_connected(self, connection):
@@ -103,8 +110,7 @@ class AsyncBroadcastListener:
         except Exception as ex:
             logger.error(ex)
         finally:
-            self._connection.close()
-            self._connection.ioloop.start()
+            self.close()
 
 
 class BlockingTaskConsumer:
@@ -159,12 +165,17 @@ class AsyncTaskConsumer:
         if callback in self._callback_functions:
             self._callback_functions.remove(callback)
 
+    def close(self):
+        self._connection.close()
+        self._connection.ioloop.start()
+
     def _connect(self):
         self._connection = pika.SelectConnection(
             pika.ConnectionParameters(host=self.host),
             self._on_connected)
         self._consuming_thread = threading.Thread(
-            target=self._start_thread, daemon=True)
+            target=self._start_thread)
+        self._consuming_thread.daemon = True
         self._consuming_thread.start()
 
     def _on_connected(self, connection):
@@ -195,8 +206,7 @@ class AsyncTaskConsumer:
         except Exception as ex:
             logger.error(ex)
         finally:
-            self._connection.close()
-            self._connection.ioloop.start()
+            close()
 
 
 class BroadcastPublisher:
@@ -271,3 +281,12 @@ class TaskPublisher:
     def _connect(self):
         self._connection = pika.BlockingConnection(
             pika.ConnectionParameters(self.host))
+
+
+def start_blocking_loop():
+    print('Started blocking loop. Press Ctrl-C to finish...')
+    try:
+        while True:
+            time.sleep(0.01)
+    except KeyboardInterrupt:
+        print('Blocking loop finished.')
