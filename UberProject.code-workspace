@@ -9,6 +9,7 @@
 		"files.associations": {
 			"stdio.h": "c",
 			"liquid.h": "c"
-		}
+		},
+		"python.pythonPath": "C:\\Python36\\python.exe"
 	}
 }
