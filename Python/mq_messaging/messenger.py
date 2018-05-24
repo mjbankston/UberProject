@@ -33,6 +33,8 @@ class BlockingBroadcastListener:
                                     no_ack=True)
         try:
             self._channel.start_consuming()
+        except KeyboardInterrupt:
+            pass
         except Exception as ex:
             logger.error(ex)
         finally:
@@ -107,6 +109,8 @@ class AsyncBroadcastListener:
     def _start_thread(self):
         try:
             self._connection.ioloop.start()
+        except KeyboardInterrupt:
+            pass
         except Exception as ex:
             logger.error(ex)
         finally:
@@ -133,6 +137,8 @@ class BlockingTaskConsumer:
                                     queue=self.queue_name)
         try:
             self._channel.start_consuming()
+        except KeyboardInterrupt:
+            pass
         except Exception as ex:
             logger.error(ex)
         finally:
@@ -203,6 +209,8 @@ class AsyncTaskConsumer:
     def _start_thread(self):
         try:
             self._connection.ioloop.start()
+        except KeyboardInterrupt:
+            pass
         except Exception as ex:
             logger.error(ex)
         finally:
@@ -256,18 +264,29 @@ class TaskPublisher:
 
     def publish_task(self, task_name, msg, timeout=30):
         try:
+            if self._connection is None or self._channel is None:
+                self._connect()
             if self._connection.is_closed:
                 self._connect()
-            channel = self._connection.channel()
-            channel.queue_declare(queue=task_name, durable=True)
-            channel.publish(exchange='',
-                            routing_key=task_name,
-                            body=json.dumps(msg),
-                            properties=pika.BasicProperties(
-                                delivery_mode=2,  # make message persistent
-                                # expiration needs milliseconds as a string but take timeout in seconds as an integer
-                                expiration=str(timeout*1000)
-                            ))
+            elif self._connection.is_closing:
+                logger.warn(
+                    'Failure to broadcast message because connection is closing.')
+                return
+            if self._channel.is_closed:
+                self._channel = self._connection.channel()
+            elif self._channel.is_closing:
+                logger.warn(
+                    'Failure to broadcast message because channel is closing.')
+                return
+            self._channel.queue_declare(queue=task_name, durable=True)
+            self._channel.publish(exchange='',
+                                  routing_key=task_name,
+                                  body=json.dumps(msg),
+                                  properties=pika.BasicProperties(
+                                      delivery_mode=2,  # make message persistent
+                                      # expiration needs milliseconds as a string but take timeout in seconds as an integer
+                                      expiration=str(timeout*1000)
+                                  ))
             logger.info(
                 'Successfully sent task message to queue "%s"' % task_name)
         except Exception as ex:
@@ -276,11 +295,16 @@ class TaskPublisher:
     def __init__(self, host):
         self.host = host
         self._connection = None
+        self._channel = None
         self._connect()
 
     def _connect(self):
-        self._connection = pika.BlockingConnection(
-            pika.ConnectionParameters(self.host))
+        try:
+            self._connection = pika.BlockingConnection(
+                pika.ConnectionParameters(self.host))
+            self._channel = self._connection.channel()
+        except Exception as ex:
+            logger.error(ex)
 
 
 def start_blocking_loop():
