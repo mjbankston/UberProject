@@ -1,6 +1,6 @@
 from channels.generic.websocket import WebsocketConsumer
 from channels.generic.websocket import AsyncWebsocketConsumer
-import mq_messaging.messenger as mq
+import mq_messaging as mq
 import json
 import logging
 import time
@@ -50,8 +50,7 @@ class StatusConsumer(WebsocketConsumer):
     def disconnect(self, close_code):
         self.signal_waveform_listener.stop_listening(
             self.signal_waveform_callback)
-        self.signal_psd_listener.stop_listening(
-            self.psd_callback)
+        self.signal_psd_listener.stop_listening(self.psd_callback)
 
     def receive(self, text_data=None, bytes_data=None):
         if text_data is None:

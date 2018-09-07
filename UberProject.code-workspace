@@ -10,6 +10,6 @@
 			"stdio.h": "c",
 			"liquid.h": "c"
 		},
-		"python.pythonPath": "C:\\Python36\\python.exe"
+		"python.pythonPath": "C:\\Python37\\python.exe"
 	}
 }

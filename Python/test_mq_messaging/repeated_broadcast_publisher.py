@@ -1,4 +1,4 @@
-import mq_messaging.messenger as mq
+import mq_messaging as mq
 import random
 import time
 import string

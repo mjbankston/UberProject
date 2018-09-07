@@ -6,6 +6,19 @@ import signal
 import time
 
 logger = logging.getLogger('mq_messaging')
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
+
+
+
+def encodeJSON(msg):
+    return json.dumps(msg)
 
 
 class BlockingBroadcastListener:
@@ -239,7 +252,7 @@ class BroadcastPublisher:
                                            exchange_type='fanout')
             self._channel.publish(exchange=broadcast_channel_name,
                                   routing_key='',
-                                  body=json.dumps(msg))
+                                  body=encodeJSON(msg))
             logger.info(
                 'Successfully sent broadcast message on channel "%s"' % broadcast_channel_name)
         except Exception as ex:
@@ -281,7 +294,7 @@ class TaskPublisher:
             self._channel.queue_declare(queue=task_name, durable=True)
             self._channel.publish(exchange='',
                                   routing_key=task_name,
-                                  body=json.dumps(msg),
+                                  body=encodeJSON(msg),
                                   properties=pika.BasicProperties(
                                       delivery_mode=2,  # make message persistent
                                       # expiration needs milliseconds as a string but take timeout in seconds as an integer

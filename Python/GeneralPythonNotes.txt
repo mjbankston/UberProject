@@ -24,4 +24,8 @@ Got importing my other Python modules in the Python directory to work through Cy
     Multiple items are separated by a ':' on Cygwin, but ';' on Windows
     Trick was to use a ';' first followed by a ':'
         Windows Python just ignores the bad path after the semicolon and Cygwin Python ignores the two ('C:' followed by rest) bad paths and uses the one immediately after the second ':'
-    
+
+Changed the importing of mq_messenger
+    Was: import mq_messenger.messenger
+    Now: import mq_messenger
+    This was done by adding 'from mq_messenger import...' lines to __init__.py
