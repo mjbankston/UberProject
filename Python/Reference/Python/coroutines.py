@@ -29,7 +29,8 @@ async def infinite_task_producer():
     try:
         while True:
             print('infinite_task_producer sending TaskMessage to task_filter')
-            TaskMessage('task_type%i' % random.randint(1, 5), uuid.uuid4(), '%i' % random.randint(1, 500)
+            TaskMessage('task_type%i' % random.randint(1, 5), uuid.uuid4(),
+                        '%i' % random.randint(1, 500))
             await asyncio.sleep(0.5)
     except KeyboardInterrupt:
         pass

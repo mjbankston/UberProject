@@ -1,11 +1,9 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import random
+import plotly.graph_objs as go
 
-# Any JavaScript or CSS that is in the 'assets' folder will automatically be
-# attached
-
-# This creates the entry point to the Dash application
 app = dash.Dash()
 
 app.layout = html.Div(
@@ -24,18 +22,36 @@ app.layout = html.Div(
                     className='w3-bar-item w3-button',
                     children='About'
                 )
-            ]),
+            ]
+        ),
+
+        #  dcc.Graph(
+        #     id='spectrum-graph',
+        #     figure={
+        #         'data': [
+        #             {'x': [],
+        #              'y': [],
+        #                 'type': 'line', 'name': 'Signal'},
+        #         ],
+        #         'layout': {
+        #             'title': 'Spectrum',
+        #             'paper_bgcolor': '#000000',
+        #             'plot_bgcolor': '#191A1A',
+        #         }
+        #     },
+        # ),
 
         dcc.Graph(
-            id='spectrum-graph',
+            id='spectrograph',
             figure={
                 'data': [
-                    {'x': [x for x in range(1000000, 1000010)],
-                     'y': [-75, -75, -60, -55, -52, -52, -55, -60, -75, -75],
-                        'type': 'line', 'name': 'Signal'},
+                    go.Heatmap(x=[x for x in range(100, 1000, 100)],
+                               y=[],
+                               z=[random.randint(0, 5) for x in range(10)]
+                               )
                 ],
                 'layout': {
-                    'title': 'Spectrum',
+                    'title': 'Spectrograph',
                     'paper_bgcolor': '#000000',
                     'plot_bgcolor': '#191A1A',
                 }

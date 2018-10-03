@@ -11,3 +11,5 @@ Python/Cython/**/*.c
 Python/Cython/*.pyd
 Python/Cython/**/*.dll
 *.o
+*.json
+scratch_space.py

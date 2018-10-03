@@ -129,10 +129,11 @@ public class App {
                 BodyShape earth = new OneAxisEllipsoid(Constants.WGS84_EARTH_EQUATORIAL_RADIUS,
                                 Constants.WGS84_EARTH_FLATTENING, earthFrame);
 
-                start = System.nanoTime();
                 TopocentricFrame targetFrame = new TopocentricFrame(earth, target, "TargetFrame");
                 TopocentricFrame monFrame = new TopocentricFrame(earth, mon, "MonitoringStationFrame");
                 TopocentricFrame refFrame = new TopocentricFrame(earth, ref, "ReferenceSignalFrame");
+                
+                start = System.nanoTime();
 
                 PVCoordinates targetVSsat1 = sat1State.getPVCoordinates(targetFrame);
                 double dt1 = targetVSsat1.getPosition().getNorm();
